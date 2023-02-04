@@ -1,0 +1,15 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "dev.crifurch.unlimitedadmin",
+  "compatibilityLevel": "JAVA_8",
+  "refmap": "unlimited_admin.refmap.json",
+  "mixins": [
+    "fixes.mixins.DragonSoundDisableMixin"
+  ],
+  "client": [
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

@@ -1,0 +1,8 @@
+name: UnlimitedAdmin
+version: '${version}'
+main: dev.crifurch.unlimitedadmin.UnlimitedAdmin
+api-version: 1.15
+prefix: UnlimitedAdmin
+softdepend: [ Vault ]
+authors: [ FenixOfDeath ]
+description: This plugin created for management your servers and a have lot usefully utils, it contains modules that can be off if it not need

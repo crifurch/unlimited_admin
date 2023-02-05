@@ -5,7 +5,9 @@
   "compatibilityLevel": "JAVA_8",
   "refmap": "unlimited_admin.refmap.json",
   "mixins": [
-    "DragonSoundDisableMixin"
+    "DragonSoundDisableMixin",
+    "LevelCrashFixMixin",
+    "SpawnerFixMixin"
   ],
   "client": [
   ],

@@ -2,6 +2,7 @@ package dev.crifurch.unlimitedadmin.modules.chat;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.players.PlayerList;
@@ -11,9 +12,10 @@ import net.minecraftforge.event.ServerChatEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Objects;
 
-import static dev.crifurch.unlimitedadmin.utils.ChatUtils.replaceColorsSymbols;
+import static dev.crifurch.unlimitedadmin.utils.ColorUtils.replaceColorsSymbols;
 
 
 public class ChatModule {
@@ -22,6 +24,15 @@ public class ChatModule {
         if (player.hasCustomName())
             return player.getCustomName();
         return player.getDisplayName();
+    }
+
+    public static String[] getPrefixes(Player player) {
+        final Collection<MutableComponent> prefixes = player.getPrefixes();
+        final ArrayList<String> prefixesList = new ArrayList<>();
+        for (MutableComponent prefix : prefixes) {
+            prefixesList.add(prefix.getString());
+        }
+        return prefixesList.toArray(new String[0]);
     }
 
     private static boolean isInSphere(BlockPos pos, BlockPos center, double radius) {
@@ -60,10 +71,13 @@ public class ChatModule {
         }
 
         String format = isLocal ? ChatConfig.SERVER.LOCAL_CHAT_FORMAT.get() : ChatConfig.SERVER.GLOBAL_CHAT_FORMAT.get();
+        final String[] prefixes = getPrefixes(event.getPlayer());
         message = format
                 .replace("%player", playerName(event.getPlayer()).getString())
                 .replace("%displayname", playerName(event.getPlayer()).getString())
-                .replace("%message", message);
+                .replace("%message", message)
+                .replace("%prefixes", String.join(" ", prefixes))
+                .replace("%prefix", prefixes.length > 0 ? prefixes[0] : "");
 
         message = replaceColorsSymbols(message);
 

@@ -1,6 +1,6 @@
 package dev.crifurch.unlimitedadmin.utils;
 
-public class ChatUtils {
+public class ColorUtils {
     public static String replaceColorsSymbols(char altColorChar, String message) {
         char[] b = message.toCharArray();
         for (int i = 0; i < b.length - 1; i++) {

@@ -2,6 +2,9 @@ package dev.crifurch.unlimitedadmin.modules.stop.commands;
 
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.level.ServerPlayer;
+
+import java.util.List;
 
 public class StopServerModule {
     final MinecraftServer server;
@@ -11,17 +14,16 @@ public class StopServerModule {
         this.server = server;
     }
 
-    public void stop(int seconds) {
-         if (isStopping) {
+    public void stop(final int seconds, final String reason) {
+        if (isStopping) {
             return;
         }
-        final int delay = seconds;
 
         isStopping = true;
         new Thread(() -> {
-            int time = delay;
+            int time = seconds;
             while (time > 0) {
-                if (time == delay || time == 60 || time == 30 || time <= 15) {
+                if (time == seconds || time == 60 || time == 30 || time <= 15) {
                     sendMsg("\u00A7cСервер будет выключен через " + time + " секунд");
                 }
                 time--;
@@ -32,6 +34,9 @@ public class StopServerModule {
                 }
             }
             sendMsg("\u00A7cСервер выключается...");
+
+            final List<ServerPlayer> players = server.getPlayerList().getPlayers().subList(0, server.getPlayerList().getPlayers().size());
+            players.forEach(player -> player.connection.disconnect(new TextComponent("\u00A7cСервер выключен: " + reason)));
             server.halt(false);
         }).start();
     }

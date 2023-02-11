@@ -14,18 +14,25 @@ public class NameSpaceFixMixin {
     @Final
     private GameProfile gameProfile;
 
+    private GameProfile profile;
+
     /**
      * @author Crifurch
      * @reason Fix space in name
      */
     @Overwrite
     public GameProfile getGameProfile() {
+        if(profile!=null) return profile;
         String name = this.gameProfile.getName();
+        if(name.length() > 16) {
+            name = name.substring(0, 16);
+        }
         name = fixRussian(name);
         if(name.length() > 16) {
             name = name.substring(0, 16);
         }
-        return new GameProfile(this.gameProfile.getId(), name);
+        profile = new GameProfile(this.gameProfile.getId(), name);
+        return profile;
     }
 
     private static String fixRussian(String name) {

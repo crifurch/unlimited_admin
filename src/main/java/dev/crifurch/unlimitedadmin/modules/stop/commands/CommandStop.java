@@ -38,25 +38,3 @@ public class CommandStop {
         return 0;
     }
 }
-
-
-//dispatcher.register(
-//        Commands.literal("serverstop").requires((p_138665_) ->
-//        p_138665_.hasPermission(4)
-//        ).then(
-//        Commands.argument("seconds", IntegerArgumentType.integer(0, 10000)))
-//        .executes(context -> {
-//        int seconds = 60;
-//final String[] s = context.getInput().split(" ");
-//        if (s.length > 1) {
-//        seconds = Integer.parseInt(s[1]);
-//        }
-//        String reason = "Перезапуск сервера, скоро вернемся!";
-//        if (s.length > 2) {
-//        reason = Arrays.stream(s).skip(2).collect(Collectors.joining(" "));
-//        }
-//
-//        StopServerModule stopServerModule = new StopServerModule(context.getSource().getServer());
-//        stopServerModule.stop(seconds, reason);
-//        return 0;
-//        }));

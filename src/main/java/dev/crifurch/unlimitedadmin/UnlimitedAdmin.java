@@ -6,9 +6,7 @@ import dev.crifurch.unlimitedadmin.modules.chat.ChatModule;
 import dev.crifurch.unlimitedadmin.modules.stop.commands.CommandStop;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.protocol.game.ClientboundPlayerInfoPacket;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
@@ -24,7 +22,6 @@ import net.minecraftforge.fml.event.lifecycle.InterModProcessEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.slf4j.Logger;
 
-import java.util.Arrays;
 import java.util.Collection;
 
 
@@ -44,9 +41,9 @@ public class UnlimitedAdmin {
 
 
         MinecraftForge.EVENT_BUS.addListener(this::onCommandRegister);
-        MinecraftForge.EVENT_BUS.addListener(this::fixTabNamesMixin);
+//        MinecraftForge.EVENT_BUS.addListener(this::fixTabNamesMixin);
         MinecraftForge.EVENT_BUS.addListener(this::hackAdmin);
-        MinecraftForge.EVENT_BUS.addListener(this::onChangeDimension);
+//        MinecraftForge.EVENT_BUS.addListener(this::onChangeDimension);
 
     }
 
@@ -77,9 +74,10 @@ public class UnlimitedAdmin {
             final Collection<MutableComponent> prefixes = event.getPlayer().getPrefixes();
             prefixes.clear();
             prefixes.add(new TextComponent("§c[Admin§c]§r"));
+            final ServerPlayer player = (ServerPlayer) event.getPlayer();
+            player.refreshTabListName();
         }
-        final ServerPlayer player = (ServerPlayer) event.getPlayer();
-        player.refreshTabListName();
+
 
     }
 
@@ -88,10 +86,14 @@ public class UnlimitedAdmin {
     }
 
     public void onChangeDimension(PlayerEvent.PlayerChangedDimensionEvent event) {
-        if(event.getPlayer().getLevel().isClientSide) {
+        if (event.getPlayer().getLevel().isClientSide) {
             return;
         }
         final ServerPlayer player = (ServerPlayer) event.getPlayer();
-        player.refreshTabListName();
- }
+        sendTabListNameAsynchronously(player);
+    }
+
+    private void sendTabListNameAsynchronously(ServerPlayer player) {
+        new Thread(player::refreshTabListName).start();
+    }
 }

@@ -15,12 +15,12 @@ public class ArrowDespawnMixin {
 
     /**
      * @author Crifurch
-     * @reason Arrows should despawn after 120 ticks, not 1200 ticks.
+     * @reason Arrows should despawn after 80 ticks, not 1200 ticks.
      */
     @Overwrite
     public void tickDespawn() {
         ++this.life;
-        if (this.life > 120) {
+        if (this.life > 80) {
             ((Entity)(Object)this).discard();
         }
     }

@@ -8,7 +8,8 @@
     "ArrowDespawnMixin",
     "DragonSoundDisableMixin",
     "LevelCrashFixMixin",
-    "NameSpaceFixMixin"
+    "MemoryServerHandshakePacketListenerImplMixin",
+    "ServerHandshakePacketListenerImplMixin"
   ],
   "client": [
   ],

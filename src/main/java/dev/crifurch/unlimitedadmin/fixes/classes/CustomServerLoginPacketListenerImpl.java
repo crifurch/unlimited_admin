@@ -28,11 +28,87 @@ import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.security.PrivateKey;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Random;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class CustomServerLoginPacketListenerImpl extends ServerLoginPacketListenerImpl {
+    private static final HashMap<Character, String> ILLEGAL_CHARS_FIX = new HashMap<>();
+
+    static {
+       ILLEGAL_CHARS_FIX.put(' ', "");
+
+        ILLEGAL_CHARS_FIX.put('а', "a");
+        ILLEGAL_CHARS_FIX.put('б', "b");
+        ILLEGAL_CHARS_FIX.put('в', "v");
+        ILLEGAL_CHARS_FIX.put('г', "g");
+        ILLEGAL_CHARS_FIX.put('д', "d");
+        ILLEGAL_CHARS_FIX.put('е', "e");
+        ILLEGAL_CHARS_FIX.put('ё', "e");
+        ILLEGAL_CHARS_FIX.put('ж', "zh");
+        ILLEGAL_CHARS_FIX.put('з', "z");
+        ILLEGAL_CHARS_FIX.put('и', "i");
+        ILLEGAL_CHARS_FIX.put('й', "iy");
+        ILLEGAL_CHARS_FIX.put('к', "k");
+        ILLEGAL_CHARS_FIX.put('л', "l");
+        ILLEGAL_CHARS_FIX.put('м', "m");
+        ILLEGAL_CHARS_FIX.put('н', "n");
+        ILLEGAL_CHARS_FIX.put('о', "o");
+        ILLEGAL_CHARS_FIX.put('п', "p");
+        ILLEGAL_CHARS_FIX.put('р', "r");
+        ILLEGAL_CHARS_FIX.put('с', "s");
+        ILLEGAL_CHARS_FIX.put('т', "t");
+        ILLEGAL_CHARS_FIX.put('у', "u");
+        ILLEGAL_CHARS_FIX.put('ф', "f");
+        ILLEGAL_CHARS_FIX.put('х', "h");
+        ILLEGAL_CHARS_FIX.put('ц', "c");
+        ILLEGAL_CHARS_FIX.put('ч', "ch");
+        ILLEGAL_CHARS_FIX.put('ш', "sh");
+        ILLEGAL_CHARS_FIX.put('щ', "sh");
+        ILLEGAL_CHARS_FIX.put('ь', "");
+        ILLEGAL_CHARS_FIX.put('ъ', "");
+        ILLEGAL_CHARS_FIX.put('ы', "");
+        ILLEGAL_CHARS_FIX.put('э', "a");
+        ILLEGAL_CHARS_FIX.put('ю', "yu");
+        ILLEGAL_CHARS_FIX.put('я', "ya");
+
+        ILLEGAL_CHARS_FIX.put('А', "A");
+        ILLEGAL_CHARS_FIX.put('Б', "B");
+        ILLEGAL_CHARS_FIX.put('В', "V");
+        ILLEGAL_CHARS_FIX.put('Г', "G");
+        ILLEGAL_CHARS_FIX.put('Д', "D");
+        ILLEGAL_CHARS_FIX.put('Е', "E");
+        ILLEGAL_CHARS_FIX.put('Ё', "E");
+        ILLEGAL_CHARS_FIX.put('Ж', "Zh");
+        ILLEGAL_CHARS_FIX.put('З', "Z");
+        ILLEGAL_CHARS_FIX.put('И', "I");
+        ILLEGAL_CHARS_FIX.put('Й', "Iy");
+        ILLEGAL_CHARS_FIX.put('К', "K");
+        ILLEGAL_CHARS_FIX.put('Л', "L");
+        ILLEGAL_CHARS_FIX.put('М', "M");
+        ILLEGAL_CHARS_FIX.put('Н', "N");
+        ILLEGAL_CHARS_FIX.put('О', "O");
+        ILLEGAL_CHARS_FIX.put('П', "P");
+        ILLEGAL_CHARS_FIX.put('Р', "R");
+        ILLEGAL_CHARS_FIX.put('С', "S");
+        ILLEGAL_CHARS_FIX.put('Т', "T");
+        ILLEGAL_CHARS_FIX.put('У', "U");
+        ILLEGAL_CHARS_FIX.put('Ф', "F");
+        ILLEGAL_CHARS_FIX.put('Х', "H");
+        ILLEGAL_CHARS_FIX.put('Ц', "C");
+        ILLEGAL_CHARS_FIX.put('Ч', "Ch");
+        ILLEGAL_CHARS_FIX.put('Ш', "Sh");
+        ILLEGAL_CHARS_FIX.put('Щ', "Sh");
+        ILLEGAL_CHARS_FIX.put('Ь', "");
+        ILLEGAL_CHARS_FIX.put('Ъ', "");
+        ILLEGAL_CHARS_FIX.put('Ы', "");
+        ILLEGAL_CHARS_FIX.put('Э', "A");
+        ILLEGAL_CHARS_FIX.put('Ю', "Yu");
+        ILLEGAL_CHARS_FIX.put('Я', "Ya");
+
+    }
+
     private static final AtomicInteger UNIQUE_THREAD_ID = new AtomicInteger(0);
     static final Logger LOGGER = LogUtils.getLogger();
     private static final Random RANDOM = new Random();
@@ -255,25 +331,14 @@ public class CustomServerLoginPacketListenerImpl extends ServerLoginPacketListen
     }
 
     private static String fixRussian(String name) {
-        char[] abcCyr = {' ', 'а', 'б', 'в', 'г', 'д', 'ѓ', 'е', 'ж', 'з', 'ѕ', 'и', 'ј', 'к', 'л', 'љ', 'м', 'н', 'њ', 'о', 'п', 'р', 'с', 'т', 'ќ', 'у', 'ф', 'х', 'ц', 'ч', 'џ', 'ш', 'А', 'Б', 'В', 'Г', 'Д', 'Ѓ', 'Е', 'Ж', 'З', 'Ѕ', 'И', 'Ј', 'К', 'Л', 'Љ', 'М', 'Н', 'Њ', 'О', 'П', 'Р', 'С', 'Т', 'Ќ', 'У', 'Ф', 'Х', 'Ц', 'Ч', 'Џ', 'Ш', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', '1', '2', '3', '4', '5', '6', '7', '8', '9', '/', '-', 'Й', 'й', 'Ё', 'ё',};
-        String[] abcLat = {"", "a", "b", "v", "g", "d", "]", "e", "zh", "z", "y", "i", "j", "k", "l", "q", "m", "n", "w", "o", "p", "r", "s", "t", "'", "u", "f", "h", "c", "ch", "x", "{", "A", "B", "V", "G", "D", "}", "E", "Zh", "Z", "Y", "I", "J", "K", "L", "Q", "M", "N", "W", "O", "P", "R", "S", "T", "KJ", "U", "F", "H", "C", ":", "X", "{", "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "1", "2", "3", "4", "5", "6", "7", "8", "9", "/", "-", "IY", "iy", "e", "e",};
-
         StringBuilder builder = new StringBuilder();
         for (int i = 0; i < name.length(); i++) {
             char c = name.charAt(i);
-            boolean found = false;
-            for (int x = 0; x < abcCyr.length; x++) {
-                if (c == abcCyr[x]) {
-                    builder.append(abcLat[x]);
-                    found = true;
-                }
-            }
-            if (!found) {
-                if (c > 0 && c <= 127) {
-                    builder.append(c);
-                } else {
-                    builder.append("_");
-                }
+            String found = ILLEGAL_CHARS_FIX.get(c);
+            if (found != null) {
+                builder.append(found);
+            } else{
+                builder.append("_");
             }
         }
         return builder.toString();

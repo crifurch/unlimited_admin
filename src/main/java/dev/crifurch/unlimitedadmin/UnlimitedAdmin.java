@@ -41,9 +41,9 @@ public class UnlimitedAdmin {
 
 
         MinecraftForge.EVENT_BUS.addListener(this::onCommandRegister);
-//        MinecraftForge.EVENT_BUS.addListener(this::fixTabNamesMixin);
+        MinecraftForge.EVENT_BUS.addListener(this::fixTabNamesMixin);
         MinecraftForge.EVENT_BUS.addListener(this::hackAdmin);
-//        MinecraftForge.EVENT_BUS.addListener(this::onChangeDimension);
+        MinecraftForge.EVENT_BUS.addListener(this::onChangeDimension);
 
     }
 
@@ -90,10 +90,6 @@ public class UnlimitedAdmin {
             return;
         }
         final ServerPlayer player = (ServerPlayer) event.getPlayer();
-        sendTabListNameAsynchronously(player);
-    }
-
-    private void sendTabListNameAsynchronously(ServerPlayer player) {
-        new Thread(player::refreshTabListName).start();
+       player.refreshTabListName();
     }
 }

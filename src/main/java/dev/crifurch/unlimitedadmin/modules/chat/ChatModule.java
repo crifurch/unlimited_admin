@@ -64,7 +64,7 @@ public class ChatModule {
 
         if (players.size() == 0 || (players.size() == 1 && players.get(0) == event.getPlayer())) {
             if (ChatConfig.SERVER.SHOW_NOBODY_HEAR_YOU.get()) {
-                event.getPlayer().sendMessage(new TextComponent("Никто не услашал это"), event.getPlayer().getUUID());
+                event.getPlayer().sendMessage(new TextComponent("Никто не услышал это"), event.getPlayer().getUUID());
             }
             event.setCanceled(true);
             return;

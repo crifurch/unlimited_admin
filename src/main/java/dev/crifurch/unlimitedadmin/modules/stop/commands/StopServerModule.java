@@ -4,6 +4,7 @@ import net.minecraft.network.chat.TextComponent;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class StopServerModule {
@@ -35,7 +36,7 @@ public class StopServerModule {
             }
             sendMsg("\u00A7cСервер выключается...");
 
-            final List<ServerPlayer> players = server.getPlayerList().getPlayers().subList(0, server.getPlayerList().getPlayers().size());
+            final List<ServerPlayer> players = new ArrayList<>(server.getPlayerList().getPlayers());
             players.forEach(player -> player.connection.disconnect(new TextComponent("\u00A7cСервер выключен: " + reason)));
             server.halt(false);
         }).start();

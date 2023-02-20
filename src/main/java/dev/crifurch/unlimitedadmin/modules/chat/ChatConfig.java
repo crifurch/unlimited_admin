@@ -22,6 +22,9 @@ public class ChatConfig {
 
         public final BooleanValue SHOW_NOBODY_HEAR_YOU;
 
+        public final BooleanValue WHITE_LIST_MESSAGE_ENABLED;
+        public final ConfigValue<String> WHITELIST_MESSAGE;
+
 
         Server(ForgeConfigSpec.Builder builder) {
             GLOBAL_CHAT_ENABLED = builder
@@ -56,6 +59,14 @@ public class ChatConfig {
             SHOW_NOBODY_HEAR_YOU = builder
                     .comment("Show Nobody Hear You Message")
                     .define("showNobodyHearYou", true);
+
+            WHITE_LIST_MESSAGE_ENABLED = builder
+                    .comment("enable overwriting whitelist message")
+                    .define("whitelistMessageEnabled", true);
+
+            WHITELIST_MESSAGE = builder
+                    .comment("Message when whitelist")
+                    .define("whitelistMessage", "You are not in whitelist");
         }
     }
 

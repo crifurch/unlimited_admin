@@ -9,7 +9,8 @@
     "DragonSoundDisableMixin",
     "LevelCrashFixMixin",
     "MemoryServerHandshakePacketListenerImplMixin",
-    "ServerHandshakePacketListenerImplMixin"
+    "ServerHandshakePacketListenerImplMixin",
+    "WhitelistMessageMixin"
   ],
   "client": [
   ],

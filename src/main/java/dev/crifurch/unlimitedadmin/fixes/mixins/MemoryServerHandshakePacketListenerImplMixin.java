@@ -2,14 +2,17 @@ package dev.crifurch.unlimitedadmin.fixes.mixins;
 
 import dev.crifurch.unlimitedadmin.fixes.classes.CustomServerLoginPacketListenerImpl;
 import net.minecraft.network.Connection;
+import net.minecraft.network.PacketListener;
 import net.minecraft.network.protocol.handshake.ClientIntentionPacket;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.MemoryServerHandshakePacketListenerImpl;
 import net.minecraft.server.network.ServerLoginPacketListenerImpl;
+import org.jetbrains.annotations.NotNull;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
 
 
@@ -19,17 +22,9 @@ public class MemoryServerHandshakePacketListenerImplMixin {
     @Final
     private  MinecraftServer server;
 
-    @Shadow
-    @Final
-    private  Connection connection;
-    /**
-     * @author Crifurch
-     * @reason allow all usernames
-     */
-    @Overwrite
-    public void handleIntention(ClientIntentionPacket p_9697_) {
-        if (!net.minecraftforge.server.ServerLifecycleHooks.handleServerLogin(p_9697_, this.connection)) return;
-        this.connection.setProtocol(p_9697_.getIntention());
-        this.connection.setListener(new CustomServerLoginPacketListenerImpl(this.server, this.connection));
+
+    @Redirect(method = "handleIntention", at = @At(value = "INVOKE", target = "Lnet/minecraft/network/Connection;setListener(Lnet/minecraft/network/PacketListener;)V"))
+    public void handleIntention(@NotNull Connection instance, PacketListener p_129506_){
+        instance.setListener(new CustomServerLoginPacketListenerImpl(this.server, p_129506_.getConnection()));
     }
 }

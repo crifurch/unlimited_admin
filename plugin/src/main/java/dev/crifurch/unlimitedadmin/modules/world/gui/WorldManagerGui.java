@@ -42,7 +42,7 @@ public class WorldManagerGui implements Listener {
             i++;
         }
         for (; i < 27; i++) {
-            inv.setItem(i, createGuiItem(Material.GLOWING_REDSTONE_ORE, "Empty", "No world"));
+            inv.setItem(i, createGuiItem(Material.GLOWSTONE, "Empty", "No world"));
         }
     }
 

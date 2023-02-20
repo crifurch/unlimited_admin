@@ -14,7 +14,6 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.ServerLoginPacketListenerImpl;
 import net.minecraft.util.Crypt;
 import net.minecraft.util.CryptException;
-import net.minecraft.world.entity.player.Player;
 import org.apache.commons.lang3.Validate;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
@@ -30,14 +29,13 @@ import java.security.PrivateKey;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Random;
-import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class CustomServerLoginPacketListenerImpl extends ServerLoginPacketListenerImpl {
     private static final HashMap<Character, String> ILLEGAL_CHARS_FIX = new HashMap<>();
 
     static {
-       ILLEGAL_CHARS_FIX.put(' ', "");
+        ILLEGAL_CHARS_FIX.put(' ', "");
 
         ILLEGAL_CHARS_FIX.put('а', "a");
         ILLEGAL_CHARS_FIX.put('б', "b");
@@ -114,12 +112,8 @@ public class CustomServerLoginPacketListenerImpl extends ServerLoginPacketListen
     private static final Random RANDOM = new Random();
     private final byte[] nonce = new byte[4];
     final MinecraftServer server;
-    public final Connection connection;
     CustomServerLoginPacketListenerImpl.State state = CustomServerLoginPacketListenerImpl.State.HELLO;
     private int tick;
-    @Nullable
-    public GameProfile gameProfile;
-    private final String serverId = "";
     private String originalUsername = "";
     @Nullable
     private ServerPlayer delayedAcceptPlayer;
@@ -127,45 +121,29 @@ public class CustomServerLoginPacketListenerImpl extends ServerLoginPacketListen
     public CustomServerLoginPacketListenerImpl(MinecraftServer p_10027_, Connection p_10028_) {
         super(p_10027_, p_10028_);
         this.server = p_10027_;
-        this.connection = p_10028_;
         RANDOM.nextBytes(this.nonce);
     }
 
     public void tick() {
-        if (this.state == CustomServerLoginPacketListenerImpl.State.NEGOTIATING) {
+        if (this.state == State.NEGOTIATING) {
             // We force the state into "NEGOTIATING" which is otherwise unused. Once we're completed we move the negotiation onto "READY_TO_ACCEPT"
             // Might want to promote player object creation to here as well..
             boolean negotiationComplete = net.minecraftforge.network.NetworkHooks.tickNegotiation(null, this.connection, this.delayedAcceptPlayer);
             if (negotiationComplete)
-                this.state = CustomServerLoginPacketListenerImpl.State.READY_TO_ACCEPT;
-        } else if (this.state == CustomServerLoginPacketListenerImpl.State.READY_TO_ACCEPT) {
+                this.state = State.READY_TO_ACCEPT;
+        } else if (this.state == State.READY_TO_ACCEPT) {
             this.handleAcceptedLogin();
-        } else if (this.state == CustomServerLoginPacketListenerImpl.State.DELAY_ACCEPT) {
+        } else if (this.state == State.DELAY_ACCEPT) {
             ServerPlayer serverplayer = this.server.getPlayerList().getPlayer(this.gameProfile.getId());
             if (serverplayer == null) {
-                this.state = CustomServerLoginPacketListenerImpl.State.READY_TO_ACCEPT;
+                this.state = State.READY_TO_ACCEPT;
                 this.placeNewPlayer(this.delayedAcceptPlayer);
                 this.delayedAcceptPlayer = null;
             }
         }
 
-        if (this.tick++ == 600) {
+        if (this.tick++ == 1200) {
             this.disconnect(new TranslatableComponent("multiplayer.disconnect.slow_login"));
-        }
-
-    }
-
-    public Connection getConnection() {
-        return this.connection;
-    }
-
-    public void disconnect(Component p_10054_) {
-        try {
-            LOGGER.info("Disconnecting {}: {}", this.getUserName(), p_10054_.getString());
-            this.connection.send(new ClientboundLoginDisconnectPacket(p_10054_));
-            this.connection.disconnect(p_10054_);
-        } catch (Exception exception) {
-            LOGGER.error("Error whilst disconnecting player", (Throwable) exception);
         }
 
     }
@@ -209,14 +187,6 @@ public class CustomServerLoginPacketListenerImpl extends ServerLoginPacketListen
 
     private void placeNewPlayer(ServerPlayer p_143700_) {
         this.server.getPlayerList().placeNewPlayer(this.connection, p_143700_);
-    }
-
-    public void onDisconnect(Component p_10043_) {
-        LOGGER.info("{} lost connection: {}", this.getUserName(), p_10043_.getString());
-    }
-
-    public String getUserName() {
-        return this.gameProfile != null ? this.gameProfile + " (" + this.connection.getRemoteAddress() + ")" : String.valueOf(this.connection.getRemoteAddress());
     }
 
     @Override
@@ -310,16 +280,6 @@ public class CustomServerLoginPacketListenerImpl extends ServerLoginPacketListen
         thread.start();
     }
 
-    public void handleCustomQueryPacket(ServerboundCustomQueryPacket p_10045_) {
-        if (!net.minecraftforge.network.NetworkHooks.onCustomPayload(p_10045_, this.connection))
-            this.disconnect(new TranslatableComponent("multiplayer.disconnect.unexpected_query_response"));
-    }
-
-    protected @NotNull GameProfile createFakeProfile(GameProfile p_10039_) {
-        UUID uuid = Player.createPlayerUUID(p_10039_.getName());
-        return new GameProfile(uuid, p_10039_.getName());
-    }
-
     enum State {
         HELLO,
         KEY,
@@ -332,14 +292,21 @@ public class CustomServerLoginPacketListenerImpl extends ServerLoginPacketListen
 
     private static String fixRussian(String name) {
         StringBuilder builder = new StringBuilder();
+        boolean foundIllegal = false;
         for (int i = 0; i < name.length(); i++) {
             char c = name.charAt(i);
             String found = ILLEGAL_CHARS_FIX.get(c);
             if (found != null) {
                 builder.append(found);
-            } else{
+                foundIllegal = true;
+            } else if ((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9') || c == '_') {
+                builder.append(c);
+            } else {
                 builder.append("_");
             }
+        }
+        if (foundIllegal) {
+            builder.insert(0, "_I_");
         }
         return builder.toString();
     }

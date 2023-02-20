@@ -4,6 +4,7 @@ import com.mojang.logging.LogUtils;
 import dev.crifurch.unlimitedadmin.modules.chat.ChatConfig;
 import dev.crifurch.unlimitedadmin.modules.chat.ChatModule;
 import dev.crifurch.unlimitedadmin.modules.stop.commands.CommandStop;
+import dev.crifurch.unlimitedadmin.modules.whitelist.CommandWhitelistMassage;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.server.level.ServerPlayer;
@@ -45,11 +46,12 @@ public class UnlimitedAdmin {
         MinecraftForge.EVENT_BUS.addListener(this::hackAdmin);
         MinecraftForge.EVENT_BUS.addListener(this::onChangeDimension);
 
+        ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, ChatConfig.serverSpec);
+
     }
 
     private void setup(final FMLCommonSetupEvent event) {
         IEventBus eventBus = FMLJavaModLoadingContext.get().getModEventBus();
-        ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, ChatConfig.serverSpec);
         eventBus.register(ChatConfig.class);
     }
 
@@ -66,6 +68,7 @@ public class UnlimitedAdmin {
 
     public void onCommandRegister(RegisterCommandsEvent event) {
         CommandStop.register(event.getDispatcher());
+        CommandWhitelistMassage.register(event.getDispatcher());
     }
 
     //todo remove this hack
@@ -82,6 +85,7 @@ public class UnlimitedAdmin {
     }
 
     public void fixTabNamesMixin(PlayerEvent.TabListNameFormat event) {
+
         event.setDisplayName(new TextComponent(event.getPlayer().getDisplayName().getString() + "(" + event.getPlayer().getLevel().dimension().location().getPath() + ")"));
     }
 
@@ -90,6 +94,6 @@ public class UnlimitedAdmin {
             return;
         }
         final ServerPlayer player = (ServerPlayer) event.getPlayer();
-       player.refreshTabListName();
+        player.refreshTabListName();
     }
 }

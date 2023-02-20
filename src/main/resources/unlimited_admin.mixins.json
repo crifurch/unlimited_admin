@@ -10,6 +10,7 @@
     "LevelCrashFixMixin",
     "MemoryServerHandshakePacketListenerImplMixin",
     "ServerHandshakePacketListenerImplMixin",
+    "WhitelistMessage2Mixin",
     "WhitelistMessageMixin"
   ],
   "client": [

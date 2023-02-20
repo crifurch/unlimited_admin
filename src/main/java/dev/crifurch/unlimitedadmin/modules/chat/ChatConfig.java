@@ -1,6 +1,6 @@
 package dev.crifurch.unlimitedadmin.modules.chat;
 
-import dev.crifurch.unlimitedadmin.UnlimitedAdmin;
+import dev.crifurch.unlimitedadmin.UnlimitedAdminForge;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.common.ForgeConfigSpec.BooleanValue;
 import net.minecraftforge.common.ForgeConfigSpec.ConfigValue;
@@ -81,12 +81,12 @@ public class ChatConfig {
 
     @SubscribeEvent
     public static void onLoad(final ModConfigEvent.Loading configEvent) {
-        UnlimitedAdmin.LOGGER.debug("Loaded UnlimitedAdmin Chat's config file {}", configEvent.getConfig().getFileName());
+        UnlimitedAdminForge.LOGGER.debug("Loaded UnlimitedAdmin Chat's config file {}", configEvent.getConfig().getFileName());
     }
 
     @SubscribeEvent
     public static void onFileChange(final ModConfigEvent.Reloading configEvent) {
-        UnlimitedAdmin.LOGGER.debug("Loaded UnlimitedAdmin Chat's config just got changed on the file system!");
+        UnlimitedAdminForge.LOGGER.debug("Loaded UnlimitedAdmin Chat's config just got changed on the file system!");
     }
 }
 

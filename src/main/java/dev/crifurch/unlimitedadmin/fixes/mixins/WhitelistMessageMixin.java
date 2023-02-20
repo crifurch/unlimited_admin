@@ -14,6 +14,7 @@ public class WhitelistMessageMixin {
     public void kickUnlistedPlayers(ServerGamePacketListenerImpl instance, Component p_9943_){
         if(ChatConfig.SERVER.WHITE_LIST_MESSAGE_ENABLED.get()){
             instance.disconnect(new TextComponent(ChatConfig.SERVER.WHITELIST_MESSAGE.get()));
+            return;
         }
         instance.disconnect(p_9943_);
     }

@@ -1,5 +1,7 @@
 package dev.crifurch.unlimitedadmin.modules.chat;
 
+import dev.crifurch.unlimitedadmin.api.compat.playermeta.IPlayerMetaProvider;
+import dev.crifurch.unlimitedadmin.common.UnlimitedAdmin;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
@@ -19,12 +21,6 @@ import static dev.crifurch.unlimitedadmin.utils.ColorUtils.replaceColorsSymbols;
 
 
 public class ChatModule {
-
-    private static Component playerName(Player player) {
-        if (player.hasCustomName())
-            return player.getCustomName();
-        return player.getDisplayName();
-    }
 
     public static String[] getPrefixes(Player player) {
         final Collection<MutableComponent> prefixes = player.getPrefixes();
@@ -71,13 +67,13 @@ public class ChatModule {
         }
 
         String format = isLocal ? ChatConfig.SERVER.LOCAL_CHAT_FORMAT.get() : ChatConfig.SERVER.GLOBAL_CHAT_FORMAT.get();
-        final String[] prefixes = getPrefixes(event.getPlayer());
+        final IPlayerMetaProvider playerMetaProvider = UnlimitedAdmin.instance.playerMetaProvider;
         message = format
-                .replace("%player", playerName(event.getPlayer()).getString())
-                .replace("%displayname", playerName(event.getPlayer()).getString())
+                .replace("%player", playerMetaProvider.getNickname(event.getPlayer()))
+                .replace("%displayname", playerMetaProvider.getDisplayName(event.getPlayer()))
                 .replace("%message", message)
-                .replace("%prefixes", String.join(" ", prefixes))
-                .replace("%prefix", prefixes.length > 0 ? prefixes[0] : "");
+                .replace("%prefixes", String.join("", playerMetaProvider.getPrefixes(event.getPlayer())))
+                .replace("%suffixes", String.join("", playerMetaProvider.getSuffixes(event.getPlayer())));
 
         message = replaceColorsSymbols(message);
 
